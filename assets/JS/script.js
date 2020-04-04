@@ -17,12 +17,19 @@ var createTaskHandler = function() {
 
     formE1.reset();
 
-    var taskFormData = {
-        name: taskNameInput,
-        type: taskTypeInput
-    };
+    var isEdit = formE1.hasAttribute("data-task-id");
+    if (isEdit) {
+        var taskId = formE1.getAttribute("data-task-id");
+        completeEditTask(taskNameInput, taskTypeInput, taskId);
+    }
+    else {
+        var taskFormData = {
+            name: taskNameInput,
+            type: taskTypeInput
+        };
 
-    createTaskE1(taskFormData);
+        createTaskE1(taskFormData);
+    }
 };
 
 var createTaskE1 = function(taskDataObj) {
@@ -117,6 +124,18 @@ var editTask = function(taskId) {
 
     formE1.setAttribute("data-task-id", taskId);
 }
+
+var completeEditTask = function(taskName, taskType, taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    taskSelected.querySelector("h3.task-name").textContent = taskName;
+    taskSelected.querySelector("span.task-type").textContent = taskType;
+
+    alert("Task updated!");
+
+    formE1.removeAttribute("data-task-id");
+    document.querySelector("#save-task").textContent = "Add Task";
+};
 
 
 var deleteTask = function(taskId) {
