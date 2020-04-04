@@ -62,7 +62,19 @@ var createTaskE1 = function(taskDataObj) {
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemE1.appendChild(taskActionsEl)
 
-    tasksToDoE1.appendChild(listItemE1);
+    if (taskDataObj.status === "to do") {
+        listItemE1.querySelector("select[name='status-change']").selectedIndex = 0;
+        tasksToDoE1.appendChild(listItemE1);
+    }
+    else if (taskDataObj.status === "in progress") {
+        listItemE1.querySelector("select[name='status-change']").selectedIndex = 1;
+        tasksInProgressE1.appendChild(listItemE1);        
+    }
+    else if (taskDataObj.status === "completed") {
+        listItemE1.querySelector("select[name='status-change']").selectedIndex = 2;
+        tasksCompletedE1.appendChild(listItemE1);
+    }  
+
 
     taskIdCounter++;
 }
@@ -264,7 +276,7 @@ var loadTasks = function() {
 
     for (var i = 0; i < savedTasks.length; i++) {
         createTaskE1(savedTasks[i]);
-    }
+    }   
 }
 
 
