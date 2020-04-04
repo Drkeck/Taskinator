@@ -40,6 +40,8 @@ var createTaskE1 = function(taskDataObj) {
 
     listItemE1.setAttribute("data-task-id", taskIdCounter);
 
+    listItemE1.setAttribute("draggable", "true");
+
     var taskInfoE1 = document.createElement("div");
 
     taskInfoE1.className = "task-info";
@@ -163,8 +165,61 @@ var taskStatusChangeHandler = function(event) {
     }
 };
 
+var dragTaskHandler = function(event) {
+    var taskId = event.target.getAttribute("data-task-id");
+    event.dataTransfer.setData("text/plain", taskId);
+    
+    var getId = event.dataTransfer.getData("text/plain");
+}
+
+var dropZoneDragHandler = function(event) {
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+        event.preventDefault();
+        taskListEl.setAttribute("style", "background: rgba(68, 233, 255, 0.7); border-style: dashed;");
+    }
+    
+};
+
+var dropTaskHandler = function(event) {
+    var id = event.dataTransfer.getData("text/plain");
+    var draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    var dropZoneEl = event.target.closest(".task-list");
+    var statusType = dropZoneEl.id;
+    var statusSelectE1 = draggableElement.querySelector("select[name='status-change']");
+    if (statusType === "task-to-do") {
+        statusSelectE1.selectedIndex = 0;
+    }
+    else if (statusType === "tasks-in-progress") {
+        statusSelectE1.selectedIndex = 1;
+    }
+    else if (statusType === "tasks-completed") {
+        statusSelectE1.selectedIndex = 2;
+    }
+    dropZoneEl.removeAttribute("style");
+    dropZoneEl.appendChild(draggableElement);
+}
+
+var dragLeaveHandler = function(event) {
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+        taskListEl.removeAttribute("style");
+    }
+}
+
+
+
+// form submit
 formE1.addEventListener("submit", createTaskHandler);
-
+// button clicks for both edit and delete
 pageContentEl.addEventListener("click", taskButtonHandler);
-
+// changing tasks via drop down menue
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+// drag and drop capability
+pageContentEl.addEventListener("dragstart", dragTaskHandler);
+
+pageContentEl.addEventListener("dragover", dropZoneDragHandler);
+
+pageContentEl.addEventListener("drop", dropTaskHandler);
+
+pageContentEl.addEventListener("dragleave", dragLeaveHandler);
