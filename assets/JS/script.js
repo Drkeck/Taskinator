@@ -3,7 +3,7 @@ var pageContentEl = document.querySelector("#page-content");
 var formE1 = document.querySelector("#task-form");
 var tasksToDoE1 = document.querySelector("#task-to-do");
 var tasksInProgressE1 = document.querySelector("#tasks-in-progress");
-var tasksCompleted = document.querySelector("#tasks-completed");
+var tasksCompletedE1 = document.querySelector("#tasks-completed");
 var taskIdCounter = 0;
 var tasks = [];
 
@@ -190,7 +190,7 @@ var taskStatusChangeHandler = function(event) {
         tasksInProgressE1.appendChild(taskSelected);
     }
     else if (statusValue === "completed") {
-        tasksCompleted.appendChild(taskSelected);
+        tasksCompletedE1.appendChild(taskSelected);
     }
 
     for (var i = 0; i < tasks.length; i++) {
@@ -254,6 +254,59 @@ var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
+var loadTasks = function() {
+    tasks = localStorage.getItem("tasks");
+    if (tasks === null) {
+        tasks = [];
+        return false
+    }
+
+    tasks = JSON.parse(tasks);
+
+    for (var i = 0; i < tasks.length; i++) {
+        debugger
+        tasks[i].id = taskIdCounter;
+
+        var listItemE1 = document.createElement("li");
+
+        listItemE1.className = "task-item";
+    
+        listItemE1.setAttribute("data-task-id", tasks[i].id);
+    
+        listItemE1.setAttribute("draggable", "true");
+    
+        var taskInfoE1 = document.createElement("div");
+    
+        taskInfoE1.className = "task-info";
+    
+        taskInfoE1.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+
+        console.log(listItemE1)
+        listItemE1.appendChild(taskInfoE1);
+        
+        var taskActionsEl = createTaskActions(tasks[i].id);
+
+        listItemE1.appendChild(taskActionsEl);
+
+        console.log(listItemE1);
+        
+        if (tasks[i].status === "to do") {
+            listItemE1.querySelector("select[name='status-change']").selectedIndex = 0;
+            tasksToDoE1.appendChild(listItemE1);
+        }
+        else if (tasks[i].status === "in progress") {
+            listItemE1.querySelector("select[name='status-change']").selectedIndex = 1;
+            tasksInProgressE1.appendChild(listItemE1);        
+        }
+        else if (tasks[i].status === "completed") {
+            listItemE1.querySelector("select[name='status-change']").selectedIndex = 2;
+            tasksCompletedE1.appendChild(listItemE1);        
+        }
+        taskIdCounter++;
+        console.log(listItemE1);
+    }
+}
+
 
 // form submit
 formE1.addEventListener("submit", createTaskHandler);
@@ -269,3 +322,5 @@ pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
 
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
+
+loadTasks();
